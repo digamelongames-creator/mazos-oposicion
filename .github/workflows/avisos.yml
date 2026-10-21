@@ -17,7 +17,7 @@ jobs:
       - run: node enviar.js
         working-directory: avisos
         env:
-          FIREBASE_URL: ${{ secrets.FIREBASE_URL }}
-          VAPID_PUBLIC: ${{ secrets.VAPID_PUBLIC }}
+          FIREBASE_URL: https://curva-olvido-f89d1-default-rtdb.europe-west1.firebasedatabase.app
+          VAPID_PUBLIC: BHAtZqRCT_ODxcQvuAUfTjQn8Q83Kf6FSUrMAo2liOSDssT6qNbG3baZY_o3PRWN5iODwL7YpfpnVAl3Z9RQQqo
           VAPID_PRIVATE: ${{ secrets.VAPID_PRIVATE }}
           APP_URL: https://digamelongames-creator.github.io/mazos-oposicion/
