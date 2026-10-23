@@ -886,6 +886,11 @@ function parseOption(s){const n=normTxt(s).replace(/[^a-z0-9ñ ]/g," ").trim(),t
   const hits=new Set();t.forEach(w=>OPTW.forEach((l,i)=>{if(l.includes(w))hits.add(i)}));
   if(hits.size===1){const i=[...hits][0];if(i===0&&t.length>4&&!t.some(w=>w!=="a"&&OPTW[0].includes(w)))return null;return i}
   if(hits.size>1){for(let k=t.length-1;k>=0;k--){for(let i=0;i<3;i++)if(OPTW[i].includes(t[k])&&t[k]!=="a"&&t[k]!=="se")return i}}return null}
+const FILLER=new Set(["la","el","lo","es","opcion","respuesta","letra","numero","creo","que","pues","vale","eh","em","mmm","la","seria","digo","por","favor","yo","de","una","un"]);
+function parseAnswer(s){const t=normTxt(s).replace(/[^a-z0-9ñ ]/g," ").split(/\s+/).filter(Boolean);if(!t.length||t.length>5)return null;
+  const hits=new Set();for(const w of t){let idx=-1;for(let i=0;i<3;i++)if(OPTW[i].includes(w)){idx=i;break}
+    if(idx>=0){if(!(w==="una"&&t.length>1))hits.add(idx);continue}if(!FILLER.has(w))return null}
+  return hits.size===1?[...hits][0]:null}
 function parseCmd(s){const n=normTxt(s);
   if(/\b(para|pausa|detente|stop|espera)\b/.test(n))return"pause";if(/\b(salir|sal|terminar|termina|acabar)\b/.test(n))return"exit";
   if(/\b(cambia|cambiar|otro tema|cambio de tema)\b/.test(n))return"change";if(/\b(repite|repetir|otra vez|no te he oido|que)\b/.test(n))return"repeat";
@@ -894,9 +899,9 @@ function speakText(s){return String(s||"").replace(/\bart(s)?\.\s*/gi,"artículo
   .replace(/\bCP\b/g,"Código Penal").replace(/\bLECrim\b/gi,"Ley de Enjuiciamiento Criminal").replace(/\bSG\b/g,"subdirección general").replace(/\bDG\b/g,"dirección general")
   .replace(/(\d)\/(\d{4})/g,"$1 de $2").replace(/\bnº\s*/gi,"número ").replace(/«|»|"/g,"")}
 function pickVoice(){const vs=speechSynthesis.getVoices(),es=vs.filter(v=>/^es/i.test(v.lang));return es.find(v=>/es[-_]ES/i.test(v.lang)&&/google|natural|online/i.test(v.name))||es.find(v=>/es[-_]ES/i.test(v.lang))||es[0]||null}
-function say(text){return new Promise(res=>{if(!V||!V.on)return res();speechSynthesis.cancel();const g=V.gen;
+function say(text){return new Promise(res0=>{if(!V||!V.on)return res0();speechSynthesis.cancel();const g=V.gen;V.speaking=true;const res=()=>{if(V){V.speaking=false;V.sayEndAt=now()}res0()};
   const parts=speakText(text).split(/(?<=[.!?;])\s+/).filter(Boolean);let i=0;const voice=pickVoice();
-  let tm=null;const nextPart=()=>{clearTimeout(tm);if(!V||!V.on||V.gen!==g||i>=parts.length)return res();const txt=parts[i++].trim();if(!txt)return nextPart();const u=new SpeechSynthesisUtterance(txt);u.lang="es-ES";if(voice)u.voice=voice;u.rate=SYNC.voiceRate||1.05;
+  let tm=null;const nextPart=()=>{clearTimeout(tm);if(!V||!V.on||V.gen!==g||i>=parts.length)return res();const txt=parts[i++].trim();if(!txt)return nextPart();(V.recent=V.recent||[]).push({t:now(),w:new Set(normTxt(txt).replace(/[^a-z0-9ñ ]/g," ").split(/\s+/).filter(Boolean))});if(V.recent.length>40)V.recent.shift();const u=new SpeechSynthesisUtterance(txt);u.lang="es-ES";if(voice)u.voice=voice;u.rate=SYNC.voiceRate||1.05;
     let fired=false;const fin=()=>{if(fired)return;fired=true;nextPart()};u.onend=fin;u.onerror=fin;tm=setTimeout(fin,3000+txt.length*95/(SYNC.voiceRate||1.05));V.utter=u;speechSynthesis.speak(u)};setVStatus("speak");nextPart()})}
 function listen(){return new Promise(res=>{if(!V||!V.on)return res(null);let got=null,done=false;const r=new SR();V.rec=r;
   r.lang="es-ES";r.interimResults=false;r.maxAlternatives=5;r.continuous=false;setVStatus("listen");
@@ -939,8 +944,8 @@ async function voiceAnswer(){let miss=0;const g=V.gen;
     const all=alts.join(" | "),cmd=parseCmd(alts[0]);
     if(cmd==="pause"){voicePause();return}if(cmd==="exit"){voiceExit();return}if(cmd==="change"){V.last=V.cur;return voiceAskTema("¿Qué tema quieres?")}
     if(cmd==="repeat"){await voiceRead();continue}if(cmd==="explain")continue;if(cmd==="skip"){V.last=V.cur;await say("Saltada.");return voiceNext()}
-    let pos=null;for(const a of alts){pos=parseOption(a);if(pos!=null)break}
-    if(pos==null){await say("No te he entendido. Di A, B o C.");continue}
+    let pos=null;for(const a of alts){if(looksEcho(a))continue;pos=parseAnswer(a);if(pos!=null)break}
+    if(pos==null){if(alts.every(a=>looksEcho(a)))continue;await say("No te he entendido. Di A, B o C.");continue}
     return voiceGrade(pos)}}
 async function voiceGrade(pos){stopBarge();V.reading=false;const c=CARDS[V.cur],oi=V.order[pos],ok=oi===c.a,ms=now()-(V.t0||V.tq||now());
   const g=ok?preGrade(ms):1;V.chosen=oi;V.phase="a";V.lastDone=V.cur;const r=commit(V.cur,g,ms,oi);V.done++;if(ok)V.ok++;V.last=V.cur;renderVoice();
@@ -980,7 +985,7 @@ function parseMark(s){const n=normTxt(s);if(!/\b(estrella|marca|marcala|marcar|m
   return{tag,prev}}
 function applyVoiceMark(mk){const cid=mk.prev?(V.lastDone||null):V.cur;if(!cid)return false;toggleMark(cid,mk.tag,true);toast("Marcada: "+MTAGN[mk.tag]);renderVoice();return true}
 function voiceAsk(){if(SYNC.bargeIn===false){(async()=>{const g=++V.gen;await voiceRead();if(V&&V.gen===g)voiceAnswer()})();return}voiceAskBarge()}
-async function voiceAskBarge(){const g=++V.gen;V.reading=true;V.miss=0;startBarge(g);await voiceRead();if(!V||!V.on||V.gen!==g)return;V.reading=false;setVStatus("listen");armSilence(g)}
+async function voiceAskBarge(){const g=++V.gen;V.reading=true;V.miss=0;V.nu=0;startBarge(g);await voiceRead();if(!V||!V.on||V.gen!==g)return;V.reading=false;setVStatus("listen");armSilence(g)}
 function armSilence(g){clearTimeout(V.silT);V.silT=setTimeout(async()=>{if(!V||!V.on||V.gen!==g||V.phase!=="q")return;
   if(++V.miss>=3){voicePause();return}V.reading=true;await say(V.miss===1?"¿A, B o C?":"No te oigo. Di A, B o C, o di repite.");if(!V||V.gen!==g)return;V.reading=false;setVStatus("listen");armSilence(g)},9000)}
 function startBarge(g){stopBarge();const r=new SR();V.brec=r;r.lang="es-ES";r.continuous=true;r.interimResults=false;r.maxAlternatives=4;
@@ -989,20 +994,22 @@ function startBarge(g){stopBarge();const r=new SR();V.brec=r;r.lang="es-ES";r.co
   r.onend=()=>{if(V&&V.on&&V.gen===g&&V.phase==="q"&&V.brec===r){setTimeout(()=>{if(V&&V.on&&V.gen===g&&V.brec===r){try{r.start()}catch(err){}}},150)}};
   try{r.start()}catch(e){}}
 function stopBarge(){if(!V)return;clearTimeout(V.silT);if(V.brec){const r=V.brec;V.brec=null;try{r.abort()}catch(e){}}}
-function looksEcho(t){if(!V.reading)return false;const w=normTxt(t).replace(/[^a-z0-9ñ ]/g," ").split(/\s+/).filter(Boolean);if(w.length>3)return true;
+const inEchoWindow=()=>V&&(V.speaking||V.reading||now()-(V.sayEndAt||0)<2000);
+function echoesRecent(w){if(w.length<2||!V.recent)return false;const cut=now()-30000,pool=new Set();V.recent.forEach(r=>{if(r.t>cut)r.w.forEach(x=>pool.add(x))});const inn=w.filter(x=>pool.has(x)).length;return inn/w.length>=0.6}
+function looksEcho(t){const w0=normTxt(t).replace(/[^a-z0-9ñ ]/g," ").split(/\s+/).filter(Boolean);if(parseAnswer(t)==null&&!parseCmd(t)&&!parseMark(t)&&echoesRecent(w0))return true;if(!inEchoWindow())return false;const w=w0;if(w.length>3)return true;
   const rt=new Set((V.readText||"").replace(/[^a-z0-9ñ ]/g," ").split(/\s+/));if(w.length>1&&w.every(x=>rt.has(x)))return true;
-  const p=parseOption(t);if(p!=null&&V.label!=null&&w.length===1&&["a","b","c","be","ce","se"].includes(w[0])&&now()-(V.labelAt||0)<2500&&p===V.label)return true;
+  const p=parseAnswer(t);if(p!=null&&V.label!=null&&w.length===1&&["a","b","c","be","ce","se"].includes(w[0])&&now()-(V.labelAt||0)<4500&&p===V.label)return true;
   return false}
 async function handleBarge(alts,g){const t=alts[0];V.heard=t;
-  const mk=parseMark(t);if(mk&&!(V.reading&&normTxt(t).split(/\s+/).length>4)){applyVoiceMark(mk);if(!V.reading){V.reading=true;await say("Marcada.");if(V&&V.gen===g){V.reading=false;armSilence(g)}}return}
+  const mk=parseMark(t);if(mk&&!(inEchoWindow()&&normTxt(t).split(/\s+/).length>4)){applyVoiceMark(mk);if(!V.reading){V.reading=true;await say("Marcada.");if(V&&V.gen===g){V.reading=false;armSilence(g)}}return}
   const cmd=parseCmd(t);
-  if(cmd&&!(V.reading&&looksEcho(t))&&cmd!=="explain"){V.gen++;stopBarge();speechSynthesis.cancel();V.reading=false;
+  if(cmd&&!looksEcho(t)&&cmd!=="explain"){V.gen++;stopBarge();speechSynthesis.cancel();V.reading=false;
     if(cmd==="pause")return voicePause();if(cmd==="exit")return voiceExit();if(cmd==="change"){V.last=V.cur;return voiceAskTema("¿Qué tema quieres?")}
     if(cmd==="repeat")return voiceAskBarge();if(cmd==="skip"){V.last=V.cur;await say("Saltada.");return voiceNext()}return}
   if(looksEcho(t)){renderVoice();return}
-  let pos=null;for(const a of alts){pos=parseOption(a);if(pos!=null)break}
+  let pos=null;for(const a of alts){if(looksEcho(a))continue;pos=parseAnswer(a);if(pos!=null)break}
   if(pos!=null){V.gen++;speechSynthesis.cancel();return voiceGrade(pos)}
-  if(!V.reading){clearTimeout(V.silT);V.reading=true;await say("No te he entendido. Di A, B o C.");if(V&&V.gen===g){V.reading=false;setVStatus("listen");armSilence(g)}}
+  if(!inEchoWindow()&&(V.nu=(V.nu||0)+1)<=2){clearTimeout(V.silT);V.reading=true;await say("No te he entendido. Di A, B o C.");if(V&&V.gen===g){V.reading=false;setVStatus("listen");armSilence(g)}}
   else renderVoice()}
 /* ---------- marcas: ⭐ repasar, fácil, difícil, errónea ---------- */
 const MTAGS=[["star","⭐ Repasar"],["facil","Fácil"],["dificil","Difícil"],["erronea","Errónea"]];
