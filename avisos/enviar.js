@@ -4,7 +4,7 @@ const webpush = require("web-push");
 const FIREBASE_URL = (process.env.FIREBASE_URL || "").replace(/\/+$/, "");
 const PUB = process.env.VAPID_PUBLIC, PRIV = process.env.VAPID_PRIVATE;
 const APP_URL = process.env.APP_URL || "./";
-if (!FIREBASE_URL || !PUB || !PRIV) { console.error("Faltan FIREBASE_URL, VAPID_PUBLIC o VAPID_PRIVATE"); process.exit(1); }
+if (!FIREBASE_URL || !PUB || !PRIV) { console.log("Avisos sin configurar: falta el secreto VAPID_PRIVATE. No se envía nada."); process.exit(0); }
 const BASE = FIREBASE_URL + "/mazosOposicion";
 webpush.setVapidDetails("mailto:avisos@mazos-oposicion.app", PUB, PRIV);
 

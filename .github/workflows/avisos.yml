@@ -1,7 +1,8 @@
 name: Avisos de preguntas pendientes
 on:
-  schedule:
-    - cron: "7 4-21 * * *"   # cada hora; el script decide si toca aviso (hora de Madrid)
+  # Desactivado hasta configurar los avisos. Para activarlo, añade el secreto VAPID_PRIVATE y descomenta:
+  # schedule:
+  #   - cron: "7 4-21 * * *"
   workflow_dispatch:
 jobs:
   avisar:
