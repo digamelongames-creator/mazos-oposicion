@@ -179,6 +179,29 @@ main{max-width:760px;margin:0 auto;padding-bottom:110px}
 .navbtn:disabled{opacity:.35;cursor:default}
 .chip.past{color:var(--rv-muted);background:var(--rv-bg);border:1px solid var(--rv-border)}
 .refuerzo{border:1px solid var(--rv-border);border-left:4px solid var(--imp);background:var(--imp-bg);border-radius:10px;padding:12px 14px;font-size:.96rem;line-height:1.55;overflow-wrap:anywhere}
+.vstat{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.9rem;color:var(--rv-muted);min-height:24px}
+.vdot{width:12px;height:12px;border-radius:50%;background:var(--rv-border);flex:none}
+.vstat.listen .vdot{background:var(--ko);animation:vpulse 1s infinite}
+.vstat.listen{color:var(--ko);font-weight:600}
+.vstat.speak .vdot{background:var(--rv-accent)}
+.vheard{font-family:var(--f-rvm);color:var(--rv-text);font-size:.85rem}
+@keyframes vpulse{50%{transform:scale(1.4);opacity:.6}}
+.vhelp{font-size:.82rem;color:var(--rv-muted);line-height:1.5}
+.mrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.mchip{border:1px solid var(--rv-border);background:var(--rv-raised);color:var(--rv-muted);border-radius:999px;padding:5px 10px;font:600 .78rem var(--f-rv);cursor:pointer}
+.mchip.on{color:var(--rv-accent-ink);background:var(--rv-accent);border-color:var(--rv-accent)}
+.mchip.m-star.on{background:var(--warn);border-color:var(--warn);color:#fff}
+.mchip.m-erronea.on{background:var(--ko);border-color:var(--ko);color:#fff}
+.mchip.m-facil.on{background:var(--ok);border-color:var(--ok);color:#fff}
+.mnote2{font-size:.78rem;color:var(--rv-muted);font-style:italic}
+.mkbar{width:100%;text-align:left;border:1px solid var(--warn);background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:10px 12px;font:600 14px var(--f-ui);cursor:pointer}
+.mitem{display:flex;flex-direction:column;gap:8px;padding-block:12px;border-bottom:1px solid var(--line);background:var(--surface)}
+.mq{border:0;background:transparent;text-align:left;display:flex;flex-direction:column;gap:4px;padding:0;color:var(--fg);font-family:var(--f-card);font-size:15px;line-height:1.4}
+.mq small{font-family:var(--f-ui);font-size:12px;color:var(--muted)}
+.mq .ma{display:none;font-family:var(--f-ui);font-size:13.5px;border-left:2px solid var(--rev);padding-left:8px;color:var(--fg)}
+.mq .ma em{display:block;font-style:normal;color:var(--muted);margin-top:4px}
+.mq .ma b{display:block;font-weight:500;color:var(--warn);margin-top:4px}
+.mitem.open .ma{display:block}
 .ref-title{display:block;font-size:.73rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--imp);margin-bottom:4px}
 .ref-status{font-size:.82rem;color:var(--imp);margin:0;min-height:1em}
 .ref-ov{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:13px;color:var(--imp);max-width:420px}
@@ -327,6 +350,8 @@ table.plan{width:100%;border-collapse:collapse;font-size:13.5px}
   </section>
   <section id="vOverview" hidden></section>
   <section id="vReview" hidden></section>
+  <section id="vVoice" hidden></section>
+  <section id="vMarks" hidden></section>
   <section id="vStats" hidden><div class="stbar pad" id="periods"></div><div id="statsBody"></div></section>
   <section id="vSettings" hidden><div class="form pad" id="settingsBody"></div></section>
 </main>
@@ -338,6 +363,8 @@ table.plan{width:100%;border-collapse:collapse;font-size:13.5px}
 <nav class="drawer" id="drawer" aria-label="Navegación">
   <div class="drhead"><b>Mazos Oposición</b><span>Policía Nacional · repaso espaciado</span></div>
   <button class="dritem" data-go="decks"><svg viewBox="0 0 24 24"><path d="M4 6H2v14a2 2 0 0 0 2 2h14v-2H4zm16-4H8a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zm0 14H8V4h12z"/></svg>Mazos</button>
+  <button class="dritem" id="voiceDr"><svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11z"/></svg>Estudiar por voz</button>
+  <button class="dritem" data-go="marks"><svg viewBox="0 0 24 24"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>Marcadas</button>
   <button class="dritem" data-go="stats"><svg viewBox="0 0 24 24"><path d="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z"/></svg>Estadísticas</button>
   <button class="dritem" data-go="settings"><svg viewBox="0 0 24 24"><path d="M19.14 12.94a7.07 7.07 0 0 0 0-1.88l2.03-1.58-1.92-3.32-2.39.96a7.03 7.03 0 0 0-1.63-.94L14.87 3.5h-3.84l-.36 2.68c-.59.24-1.13.56-1.63.94l-2.39-.96-1.92 3.32 2.03 1.58a7.07 7.07 0 0 0 0 1.88l-2.03 1.58 1.92 3.32 2.39-.96c.5.38 1.04.7 1.63.94l.36 2.68h3.84l.36-2.68c.59-.24 1.13-.56 1.63-.94l2.39.96 1.92-3.32zM12.95 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg>Ajustes</button>
   <button class="dritem" id="fsBtn"><svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7zm-2-4h2V7h3V5H5zm12 7h-3v2h5v-5h-2zM14 5v2h3v3h2V5z"/></svg>Pantalla completa</button>
@@ -414,42 +441,48 @@ function isImpNum(n){return TOP.has(n)?2:IMP.has(n)?1:0}
 const LKEY="mazosOposicion.v2",SKEY="mazosOposicion.ajustes";
 const DOCTS={};                                      // ruta -> última modificación
 let SYNC={url:"https://curva-olvido-f89d1-default-rtdb.europe-west1.firebasedatabase.app",key:"",model:"claude-sonnet-5-5",hours:[7,13,19]};
+const DEFAULT_FB=SYNC.url;
 try{SYNC=Object.assign(SYNC,JSON.parse(localStorage.getItem(SKEY)||"{}"))}catch(e){}
+if(!SYNC.url&&!SYNC.syncOff)SYNC.url=DEFAULT_FB;
+if(!Array.isArray(SYNC.hours)||!SYNC.hours.length)SYNC.hours=[7,13,19];
+let lastSyncErr="";
+async function fbErr(r){let t="";try{t=(await r.json()).error||""}catch(e){}return"HTTP "+r.status+(t?" · "+t:"")}
 const saveSyncCfg=()=>{try{localStorage.setItem(SKEY,JSON.stringify(SYNC))}catch(e){}};
 function setSync(t){$("#sync").textContent=t}
 let idb=null;
 function idbOpen(){return new Promise(res=>{try{const r=indexedDB.open("mazos-oposicion",1);r.onupgradeneeded=()=>r.result.createObjectStore("kv");r.onsuccess=()=>res(r.result);r.onerror=()=>res(null)}catch(e){res(null)}})}
 function idbGet(k){return new Promise(res=>{if(!idb)return res(null);try{const q=idb.transaction("kv").objectStore("kv").get(k);q.onsuccess=()=>res(q.result??null);q.onerror=()=>res(null)}catch(e){res(null)}})}
 function idbSet(k,v){return new Promise(res=>{if(!idb)return res(false);try{const tx=idb.transaction("kv","readwrite");tx.objectStore("kv").put(v,k);tx.oncomplete=()=>res(true);tx.onerror=()=>res(false)}catch(e){res(false)}})}
-const snapshot=()=>({v:2,CFG,ST,LOG,CUSTOM,REF,DOCTS});
+let MARKS={};
+const snapshot=()=>({v:2,CFG,ST,LOG,CUSTOM,REF,MARKS,DOCTS});
 let localT=null;
 function saveLocalSoon(){clearTimeout(localT);localT=setTimeout(saveLocalNow,400)}
 async function saveLocalNow(){clearTimeout(localT);const s=JSON.stringify(snapshot());if(!(await idbSet("state",s))){try{localStorage.setItem(LKEY,s)}catch(e){toast("No se pudo guardar el progreso en el dispositivo")}}}
-function applyState(r){CFG=Object.assign({newPerDay:10,decks:{},customDecks:{}},r.CFG||{});ST=r.ST||{};LOG=r.LOG||{};CUSTOM=r.CUSTOM||{};REF=r.REF||{};
+function applyState(r){CFG=Object.assign({newPerDay:10,decks:{},customDecks:{}},r.CFG||{});ST=r.ST||{};LOG=r.LOG||{};CUSTOM=r.CUSTOM||{};REF=r.REF||{};MARKS=r.MARKS||{};
   for(const k in DOCTS)delete DOCTS[k];Object.assign(DOCTS,r.DOCTS||{})}
 async function loadLocal(){idb=await idbOpen();let s=await idbGet("state");if(!s){try{s=localStorage.getItem(LKEY)}catch(e){}}
   if(s){try{applyState(JSON.parse(s));return true}catch(e){}}return false}
-function allPaths(){const p=["config/main"];Object.keys(ST).forEach(i=>p.push("srs/"+i));Object.keys(LOG).forEach(i=>p.push("revlog/"+i));Object.keys(CUSTOM).forEach(i=>p.push("custom/"+i));Object.keys(REF).forEach(i=>p.push("refuerzo/"+i));return p}
+function allPaths(){const p=["config/main","marcas/main"];Object.keys(ST).forEach(i=>p.push("srs/"+i));Object.keys(LOG).forEach(i=>p.push("revlog/"+i));Object.keys(CUSTOM).forEach(i=>p.push("custom/"+i));Object.keys(REF).forEach(i=>p.push("refuerzo/"+i));return p}
 function docData(path){const i=path.indexOf("/"),col=path.slice(0,i),id=path.slice(i+1);
   if(col==="config")return CFG;if(col==="srs")return{cards:ST[id]||{}};if(col==="revlog")return{date:id,entries:LOG[id]||[]};
-  if(col==="custom")return CUSTOM[id]||{cards:{},edits:{},hidden:[]};if(col==="resumen")return buildResumen();return REF[id]||{items:{}}}
+  if(col==="custom")return CUSTOM[id]||{cards:{},edits:{},hidden:[]};if(col==="resumen")return buildResumen();if(col==="marcas")return{m:MARKS};return REF[id]||{items:{}}}
 function setDoc(path,v){const i=path.indexOf("/"),col=path.slice(0,i),id=path.slice(i+1);
   if(col==="config")CFG=Object.assign({newPerDay:10,decks:{},customDecks:{}},v);else if(col==="srs")ST[id]=v.cards||{};
-  else if(col==="revlog")LOG[id]=v.entries||[];else if(col==="custom")CUSTOM[id]=v;else if(col==="refuerzo")REF[id]=v}
+  else if(col==="revlog")LOG[id]=v.entries||[];else if(col==="custom")CUSTOM[id]=v;else if(col==="refuerzo")REF[id]=v;else if(col==="marcas")MARKS=v.m||{}}
 const pending=new Set();let pushT=null;
 function touch(path){DOCTS[path]=now();pending.add(path);DOCTS["resumen/main"]=now();pending.add("resumen/main");saveLocalSoon();if(SYNC.url){clearTimeout(pushT);pushT=setTimeout(pushRemote,2000)}}
-const saveSrs=did=>touch("srs/"+did),saveLog=ds=>touch("revlog/"+ds),saveCfg=()=>touch("config/main"),saveCustom=did=>touch("custom/"+did),saveRef=did=>touch("refuerzo/"+did);
+const saveSrs=did=>touch("srs/"+did),saveLog=ds=>touch("revlog/"+ds),saveCfg=()=>touch("config/main"),saveCustom=did=>touch("custom/"+did),saveRef=did=>touch("refuerzo/"+did),saveMarks=()=>touch("marcas/main");
 const fbBase=()=>SYNC.url.trim().replace(/\/+$/,"")+"/mazosOposicion";
 let pushing=false;
 async function pushRemote(){if(!SYNC.url||!pending.size||pushing)return;if(!navigator.onLine){setSync("sin conexión");return}
   pushing=true;const paths=[...pending];pending.clear();setSync("sincronizando…");
   const body={};paths.forEach(p=>{body[p]={_ts:DOCTS[p]||now(),json:JSON.stringify(docData(p))}});
-  try{const r=await fetch(fbBase()+".json",{method:"PATCH",headers:{"content-type":"application/json"},body:JSON.stringify(body)});if(!r.ok)throw new Error("HTTP "+r.status);setSync("")}
-  catch(e){paths.forEach(p=>pending.add(p));setSync("sin sincronizar")}
+  try{const r=await fetch(fbBase()+".json",{method:"PATCH",headers:{"content-type":"application/json"},body:JSON.stringify(body)});if(!r.ok)throw new Error(await fbErr(r));setSync("");lastSyncErr=""}
+  catch(e){paths.forEach(p=>pending.add(p));setSync("sin sincronizar");lastSyncErr=e.message}
   finally{pushing=false}}
 async function pullRemote(){if(!SYNC.url)return false;if(!navigator.onLine){setSync("sin conexión");return false}
   setSync("sincronizando…");
-  try{const r=await fetch(fbBase()+".json");if(!r.ok)throw new Error("HTTP "+r.status);const data=await r.json()||{};let changed=false;const seen=new Set();
+  try{const r=await fetch(fbBase()+".json");if(!r.ok)throw new Error(await fbErr(r));lastSyncErr="";const data=await r.json()||{};let changed=false;const seen=new Set();
     for(const col of Object.keys(data))for(const id of Object.keys(data[col]||{})){const p=col+"/"+id,rem=data[col][id];seen.add(p);if(!rem||typeof rem.json!=="string")continue;
       let v;try{v=JSON.parse(rem.json)}catch(e){continue}const rts=rem._ts||0,lts=DOCTS[p]||0;
       if(col==="revlog"){const loc=LOG[id]||[],key=x=>x.c+"|"+x.t,have=new Set(loc.map(key)),remK=new Set((v.entries||[]).map(key));
@@ -460,7 +493,7 @@ async function pullRemote(){if(!SYNC.url)return false;if(!navigator.onLine){setS
     allPaths().forEach(p=>{if(!seen.has(p))pending.add(p)});
     if(changed){buildIndex();await saveLocalNow()}
     setSync("");if(pending.size)pushRemote();return changed}
-  catch(e){setSync("sin sincronizar");return false}}
+  catch(e){setSync("sin sincronizar");lastSyncErr=e.message;return false}}
 document.addEventListener("visibilitychange",async()=>{
   if(document.hidden){saveLocalNow();pushRemote()}
   else if(view!=="review"){const ch=await pullRemote();if(ch||view==="decks")go(view)}});
@@ -486,7 +519,7 @@ const pushSupported=()=>"serviceWorker" in navigator&&"PushManager" in window&&"
 async function currentSub(){if(!pushSupported())return null;const reg=await navigator.serviceWorker.ready;return reg.pushManager.getSubscription()}
 async function savePushDoc(sub){const id=hashId(sub.endpoint);
   const r=await fetch(fbBase()+"/push/"+id+".json",{method:"PUT",headers:{"content-type":"application/json"},body:JSON.stringify({sub:JSON.stringify(sub),hours:SYNC.hours,tz:"Europe/Madrid",actualizado:now()})});
-  if(!r.ok)throw new Error("HTTP "+r.status)}
+  if(!r.ok)throw new Error("Firebase no deja guardar los avisos ("+(await fbErr(r))+")")}
 async function enablePush(){if(!pushSupported())throw new Error("Este navegador no admite avisos; instala la app desde Chrome");
   if(!SYNC.url)throw new Error("Configura antes la sincronización con Firebase");
   const perm=await Notification.requestPermission();if(perm!=="granted")throw new Error("No has dado permiso para mostrar avisos");
@@ -522,20 +555,20 @@ function ivlText(s,ease,did){const n=now(),x=sched(s,ease,n,did);
   if(isLearnT(x.ty)){const m=Math.round((x.due-n)/60e3);return m<60?m+" min":Math.round(m/60)+" h"}
   const d=x.due-dayNum(n);if(d===1)return"1 día";if(d<30)return d+" días";if(d<365)return dec(d/30)+" meses";return dec(d/365)+" años"}
 
-function counts(did){const t=dayNum(now()),eot=dayTs(t+1),st=ST[did]||{};let nw=0,ln=0,rv=0,intro=0;
+function counts(did){if(did==="_marks")return marksCounts();const t=dayNum(now()),eot=dayTs(t+1),st=ST[did]||{};let nw=0,ln=0,rv=0,intro=0;
   for(const cid of DCARDS[did]||[]){const s=st[cid],ty=typeOf(s);
     if(ty==="new")nw++;else if(isLearnT(ty)){if(s.due<eot)ln++}else if(s.due<=t)rv++;
     if(s&&s.intro===t)intro++}
   const c=dcfg(did),lim=c.paused?0:(c.newPerDay??CFG.newPerDay);
   return{n:Math.max(0,Math.min(nw,lim-intro)),l:ln,r:rv,total:(DCARDS[did]||[]).length,newLeft:nw}}
-function nextStudy(did){const t=dayNum(now()),k=counts(did);if(k.n+k.l+k.r>0)return t;let m=Infinity;const st=ST[did]||{};
+function nextStudy(did){if(did==="_marks")return null;const t=dayNum(now()),k=counts(did);if(k.n+k.l+k.r>0)return t;let m=Infinity;const st=ST[did]||{};
   for(const cid of DCARDS[did]||[]){const s=st[cid];if(!s)continue;if(s.ty==="review")m=Math.min(m,s.due);else if(isLearnT(s.ty))m=Math.min(m,dayNum(s.due))}
   const c=dcfg(did);if(k.newLeft>0&&!c.paused&&(c.newPerDay??CFG.newPerDay)>0)m=Math.min(m,t+1);return m===Infinity?null:m}
 function allLogs(){const out=[];for(const k in LOG)for(const r of LOG[k])out.push(r);return out}
 function lastStudy(did){let m=null;for(const k in LOG)for(const r of LOG[k])if(r.d===did&&(m===null||r.t>m))m=r.t;return m}
 
 let sess={alt:0,last:null,done:0,ok:0,bad:0,start:0,hist:[]};
-function nextCard(did,avoid){const n=now(),t=dayNum(n),st=ST[did]||{},k=counts(did);
+function nextCard(did,avoid){if(did==="_marks")return nextMarked(avoid);const n=now(),t=dayNum(n),st=ST[did]||{},k=counts(did);
   const learnNow=[],rev=[],news=[],ahead=[];
   for(const cid of DCARDS[did]||[]){const s=st[cid],ty=typeOf(s);
     if(ty==="new")news.push(cid);else if(isLearnT(ty)){if(s.due<=n)learnNow.push(cid);else if(s.due<=n+AHEAD)ahead.push(cid)}else if(s.due<=t)rev.push(cid)}
@@ -558,22 +591,24 @@ function commit(cid,ease,ms,o){const c=CARDS[cid],did=c.did,n=now(),st=ST[did]||
 let view="decks",curDeck=null,statDeck="all",period=30;
 const ICON_MENU='<path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/>',ICON_BACK='<path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20z"/>';
 function go(v,opts){view=v;if(opts&&opts.deck)curDeck=opts.deck;
-  ["vDecks","vOverview","vReview","vStats","vSettings"].forEach(id=>$("#"+id).hidden=true);
-  const sub=v==="overview"||v==="review";document.body.classList.toggle("reviewing",v==="review");
+  ["vDecks","vOverview","vReview","vStats","vSettings","vVoice","vMarks"].forEach(id=>$("#"+id).hidden=true);
+  const sub=v==="overview"||v==="review"||v==="voice";document.body.classList.toggle("reviewing",v==="review");
   $("#navIcon").innerHTML=sub?ICON_BACK:ICON_MENU;$("#navBtn").setAttribute("aria-label",sub?"Volver":"Menú");
   $("#fab").hidden=v!=="decks";$("#barCounts").hidden=v!=="review";$("#undoBtn").hidden=v!=="review"||!undo;$("#editBtn").hidden=v!=="review";$("#statDeck").hidden=v!=="stats";
   document.querySelectorAll(".dritem").forEach(b=>b.classList.toggle("on",b.dataset.go===v));
   if(v==="decks"){$("#title").textContent="Mazos";$("#vDecks").hidden=false;renderDecks()}
   if(v==="overview"){$("#title").textContent=DECKS[curDeck]?.name||"Mazo";$("#vOverview").hidden=false;renderOverview()}
-  if(v==="review"){$("#title").textContent=DECKS[curDeck]?.name||"";$("#vReview").hidden=false;sess={alt:0,last:null,done:0,ok:0,bad:0,start:now(),hist:[]};undo=null;showNext()}
+  if(v==="review"){$("#title").textContent=DECKS[curDeck]?.name||(curDeck==="_marks"?"Preguntas marcadas":"");$("#vReview").hidden=false;sess={alt:0,last:null,done:0,ok:0,bad:0,start:now(),hist:[]};undo=null;showNext()}
+  if(v==="marks"){$("#title").textContent="Preguntas marcadas";$("#vMarks").hidden=false;renderMarks()}
+  if(v==="voice"){$("#title").textContent="Estudiar por voz";$("#vVoice").hidden=false;renderVoice()}
   if(v==="stats"){$("#title").textContent="Estadísticas";$("#vStats").hidden=false;renderStats()}
   if(v==="settings"){$("#title").textContent="Ajustes";$("#vSettings").hidden=false;renderSettings()}
   closeDrawer();window.scrollTo(0,0)}
-$("#navBtn").onclick=()=>{if(view==="review"){const d=curDeck;go("overview");if(sess.done)maybeRefuerzo(d)}else if(view==="overview")go("decks");else openDrawer()};
+$("#navBtn").onclick=()=>{if(view==="voice"){voiceExit();return}if(view==="review"&&curDeck==="_marks"){go("marks");return}if(view==="review"){const d=curDeck;go("overview");if(sess.done)maybeRefuerzo(d)}else if(view==="overview")go("decks");else openDrawer()};
 function openDrawer(){$("#scrim").hidden=false;requestAnimationFrame(()=>$("#drawer").classList.add("open"))}
 function closeDrawer(){$("#drawer").classList.remove("open");if(!$("#sheetHost").innerHTML)$("#scrim").hidden=true}
 $("#scrim").onclick=()=>{closeSheet();closeDrawer()};
-document.querySelectorAll(".dritem").forEach(b=>b.onclick=()=>go(b.dataset.go));
+document.querySelectorAll(".dritem[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));$("#voiceDr").onclick=()=>{closeDrawer();voiceStart(null)};
 
 function sheet(html){$("#sheetHost").innerHTML='<div class="sheet" role="dialog">'+html+'</div>';$("#scrim").hidden=false;return $("#sheetHost .sheet")}
 function closeSheet(){$("#sheetHost").innerHTML="";if(!$("#drawer").classList.contains("open"))$("#scrim").hidden=true}
@@ -597,8 +632,10 @@ function renderDecks(){const ds=deckList(),t=dayNum(now()),today=LOG[dayStr(t)]|
     const tags=(im?'<span class="tag imp">'+(im===2?"muy imp.":"imp.")+'</span>':'')+(c.weak?'<span class="tag weak">flojo</span>':'')+(c.paused?'<span class="tag pause">pausa</span>':'');
     const b=(v,cl)=>'<b class="'+cl+(v?"":" z")+'">'+v+'</b>';
     rows+='<div class="deck pad '+cls+'"><button class="main" data-open="'+d.id+'"><span class="mark"></span><span class="dn"><span class="nm">'+(d.num!=null?'<span class="num">T'+d.num+'</span>':'')+esc(d.name)+tags+'</span><small>'+info+'</small></span></button><div class="cols tabnum">'+b(k.n,"c-n")+b(k.l,"c-l")+b(k.r,"c-r")+'</div><button class="more" data-more="'+d.id+'" aria-label="Opciones del mazo">'+I.more+'</button></div>'}
-  $("#summary").innerHTML='<span><b>'+due+'</b> preguntas para hoy en <b>'+act+'</b> de '+ds.length+' temas</span><span>Hoy: '+today.length+' respondidas · '+Math.round(ms/60000)+' min</span>';
+  const nMk=markedIds("all","all").length;
+  $("#summary").innerHTML=(nMk?'<button class="mkbar" id="mkBar">⭐ '+nMk+' preguntas marcadas · ver y estudiar</button>':'')+'<span><b>'+due+'</b> preguntas para hoy en <b>'+act+'</b> de '+ds.length+' temas</span><span>Hoy: '+today.length+' respondidas · '+Math.round(ms/60000)+' min</span>';
   $("#deckList").innerHTML=ds.length?'<div class="dhead pad"><span class="sp">Tema</span><div class="cols"><span>Nue</span><span>Apr</span><span>Rep</span></div><span style="width:40px"></span></div>'+rows:'<div class="empty">No hay mazos.</div>';
+  if($("#mkBar"))$("#mkBar").onclick=()=>go("marks");
   $("#deckList").querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>go("overview",{deck:b.dataset.open}));
   $("#deckList").querySelectorAll("[data-more]").forEach(b=>b.onclick=()=>deckMenu(b.dataset.more))}
 function deckMenu(did){const d=DECKS[did],c=dcfg(did);
@@ -697,9 +734,9 @@ function renderOverview(){const d=DECKS[curDeck];if(!d){go("decks");return}const
    '<div class="ovmeta">'+k.total+' preguntas · '+seen+' vistas · '+(c.paused?"en pausa":(c.newPerDay??CFG.newPerDay)+" nuevas al día")+(c.weak?" · tema flojo":"")+'<br>Último estudio: '+(ls?relDay(dayNum(ls)):"nunca")+' · Próximo: '+(nx===null?"—":relDay(nx))+'</div>'+
    '<button class="bigbtn" id="studyBtn"'+(sum?"":" disabled")+'>'+(sum?"Estudiar":"Al día")+'</button>'+
    (refStatusText(d.id)?'<div class="ref-ov"><span>'+esc(refStatusText(d.id))+'</span>'+(refPending(d.id).length&&hasAI()&&!refOff&&!refBusy?'<button class="chipbtn" id="refNow">Preparar ahora</button>':'')+'</div>':'')+
-   '<div class="linkrow"><button class="chipbtn" data-a="add">Añadir pregunta</button><button class="chipbtn" data-a="stat">Estadísticas</button><button class="chipbtn" data-a="opt">Opciones</button></div></div>';
+   '<div class="linkrow"><button class="chipbtn" data-a="voice">🎙 Estudiar por voz</button><button class="chipbtn" data-a="add">Añadir pregunta</button><button class="chipbtn" data-a="stat">Estadísticas</button><button class="chipbtn" data-a="opt">Opciones</button></div></div>';
   $("#studyBtn").onclick=()=>go("review");if($("#refNow"))$("#refNow").onclick=()=>runRefuerzo(d.id);
-  $("#vOverview").querySelector('[data-a="add"]').onclick=()=>cardForm(d.id);
+  $("#vOverview").querySelector('[data-a="add"]').onclick=()=>cardForm(d.id);$("#vOverview").querySelector('[data-a="voice"]').onclick=()=>voiceStart(d.id);
   $("#vOverview").querySelector('[data-a="stat"]').onclick=()=>{statDeck=d.id;go("stats")};
   $("#vOverview").querySelector('[data-a="opt"]').onclick=()=>deckOptions(d.id)}
 
@@ -735,6 +772,7 @@ function cardHtml(it){const c=CARDS[it.cid];if(!c)return"";const s=stOf(it.cid),
     if(it.ro){if(c.kind==="basic"||ok)h+='<p class="grade-l">Marcaste: <b>'+GNAME[it.grade]+'</b></p>'}
     else if(c.kind==="basic"||ok){const gs=c.kind==="basic"?[[1,"Otra vez"],[2,"Difícil"],[3,"Bien"],[4,"Fácil"]]:[[2,"La dudé"],[3,"Bien"],[4,"Muy fácil"]];
       h+='<div class="grade"><span class="grade-l">'+(c.kind==="basic"?"¿La sabías?":(it.auto?"Preseleccionado por tu tiempo ("+secs(it.ms)+"). Cámbialo si no encaja:":"¿Cómo de segura la tenías?"))+'</span><div class="grades'+(gs.length===4?" four":"")+'">'+gs.map(([e,l])=>'<button class="gbtn g'+e+(it.grade===e?" on":"")+'" data-g="'+e+'">'+l+'<small>'+ivlText(s,e,c.did)+'</small></button>').join("")+'</div></div>'}}
+  h+=marksRow(it.cid);
   const canBack=it.ro?hpos>0:sess.hist.length>0;
   h+='<div class="rv-actions"><div class="rv-left"><button class="navbtn" id="prevQ" aria-label="Pregunta anterior"'+(canBack?"":" disabled")+'>‹</button>'+(ans?'<button class="ghost" id="editInline">Editar</button>':'')+'</div>'+
     (it.ro?'<button class="next-btn" id="fwdQ">'+(hpos<sess.hist.length-1?"Adelante ›":"Volver a la actual ›")+'</button>':ans?'<button class="next-btn" id="nextBtn">Siguiente ›</button>':'<span></span>')+'</div></div>';
@@ -834,6 +872,177 @@ async function runRefuerzo(did){const ids=refPending(did).slice(0,6);if(!ids.len
   }catch(e){const st=e&&e.status;if(st===401||st===403){refOff=true;toast("La clave de Claude no es válida; revísala en Ajustes")}else if(st===429||st===529||st===503){toast("Claude está ocupado; los refuerzos se prepararán en la próxima sesión")}else toast("No se pudieron preparar los refuerzos; se intentará en la próxima sesión")}
   finally{refBusy=null;refreshRefUI()}}
 
+/* ---------- estudiar por voz ---------- */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+const voiceOK=()=>!!(SR&&window.speechSynthesis);
+let V=null;   // estado del modo voz
+const NUMW={uno:1,una:1,primero:1,primera:1,dos:2,segundo:2,segunda:2,tres:3,tercero:3,tercera:3,cuatro:4,cinco:5,seis:6,siete:7,ocho:8,nueve:9,diez:10,once:11,doce:12,trece:13,catorce:14,quince:15,dieciseis:16,diecisiete:17,dieciocho:18,diecinueve:19,veinte:20,
+  veintiuno:21,veintiuna:21,veintidos:22,veintitres:23,veinticuatro:24,veinticinco:25,veintiseis:26,veintisiete:27,veintiocho:28,veintinueve:29,treinta:30,cuarenta:40};
+function wordsToNum(s){const t=normTxt(s).replace(/[^a-z0-9ñ ]/g," ").split(/\s+/).filter(Boolean);
+  for(let i=0;i<t.length;i++){if(/^\d+$/.test(t[i]))return+t[i];
+    if(NUMW[t[i]]!=null){let n=NUMW[t[i]];if((n===30||n===40)&&t[i+1]==="y"&&NUMW[t[i+2]]!=null&&NUMW[t[i+2]]<10)n+=NUMW[t[i+2]];return n}}return null}
+const OPTW=[["a","uno","una","1","primera","primero","alfa","alpha","alpa"],["b","be","ve","uve","dos","2","segunda","segundo","bravo"],["c","ce","se","sé","tres","3","tercera","tercero","ultima","charlie","charly","charli","chali"]];
+function parseOption(s){const n=normTxt(s).replace(/[^a-z0-9ñ ]/g," ").trim(),t=n.split(/\s+/).filter(Boolean);if(!t.length)return null;
+  const hits=new Set();t.forEach(w=>OPTW.forEach((l,i)=>{if(l.includes(w))hits.add(i)}));
+  if(hits.size===1){const i=[...hits][0];if(i===0&&t.length>4&&!t.some(w=>w!=="a"&&OPTW[0].includes(w)))return null;return i}
+  if(hits.size>1){for(let k=t.length-1;k>=0;k--){for(let i=0;i<3;i++)if(OPTW[i].includes(t[k])&&t[k]!=="a"&&t[k]!=="se")return i}}return null}
+function parseCmd(s){const n=normTxt(s);
+  if(/\b(para|pausa|detente|stop|espera)\b/.test(n))return"pause";if(/\b(salir|sal|terminar|termina|acabar)\b/.test(n))return"exit";
+  if(/\b(cambia|cambiar|otro tema|cambio de tema)\b/.test(n))return"change";if(/\b(repite|repetir|otra vez|no te he oido|que)\b/.test(n))return"repeat";
+  if(/\b(salta|saltar|pasa|siguiente)\b/.test(n))return"skip";if(/\b(explicacion|por que)\b/.test(n))return"explain";return null}
+function speakText(s){return String(s||"").replace(/\bart(s)?\.\s*/gi,"artículo$1 ").replace(/\bLO\b/g,"ley orgánica").replace(/\bRD\b/g,"real decreto").replace(/\bCE\b/g,"Constitución")
+  .replace(/\bCP\b/g,"Código Penal").replace(/\bLECrim\b/gi,"Ley de Enjuiciamiento Criminal").replace(/\bSG\b/g,"subdirección general").replace(/\bDG\b/g,"dirección general")
+  .replace(/(\d)\/(\d{4})/g,"$1 de $2").replace(/\bnº\s*/gi,"número ").replace(/«|»|"/g,"")}
+function pickVoice(){const vs=speechSynthesis.getVoices(),es=vs.filter(v=>/^es/i.test(v.lang));return es.find(v=>/es[-_]ES/i.test(v.lang)&&/google|natural|online/i.test(v.name))||es.find(v=>/es[-_]ES/i.test(v.lang))||es[0]||null}
+function say(text){return new Promise(res=>{if(!V||!V.on)return res();speechSynthesis.cancel();const g=V.gen;
+  const parts=speakText(text).split(/(?<=[.!?;])\s+/).filter(Boolean);let i=0;const voice=pickVoice();
+  let tm=null;const nextPart=()=>{clearTimeout(tm);if(!V||!V.on||V.gen!==g||i>=parts.length)return res();const txt=parts[i++].trim();if(!txt)return nextPart();const u=new SpeechSynthesisUtterance(txt);u.lang="es-ES";if(voice)u.voice=voice;u.rate=SYNC.voiceRate||1.05;
+    let fired=false;const fin=()=>{if(fired)return;fired=true;nextPart()};u.onend=fin;u.onerror=fin;tm=setTimeout(fin,3000+txt.length*95/(SYNC.voiceRate||1.05));V.utter=u;speechSynthesis.speak(u)};setVStatus("speak");nextPart()})}
+function listen(){return new Promise(res=>{if(!V||!V.on)return res(null);let got=null,done=false;const r=new SR();V.rec=r;
+  r.lang="es-ES";r.interimResults=false;r.maxAlternatives=5;r.continuous=false;setVStatus("listen");
+  r.onresult=e=>{const alts=[...e.results[0]].map(a=>a.transcript);got=alts};
+  r.onerror=e=>{if(e.error==="not-allowed"||e.error==="service-not-allowed"){V.denied=true}};
+  r.onend=()=>{if(done)return;done=true;V.rec=null;res(got)};
+  try{r.start()}catch(e){done=true;res(null)}})}
+function setVStatus(st,heard){if(!V)return;V.status=st;if(heard!=null)V.heard=heard;renderVoice()}
+async function voiceStart(did){if(!voiceOK()){toast("Este navegador no permite estudiar por voz; usa Chrome");return}
+  V={gen:0,on:true,did:did||null,status:"idle",heard:"",cur:null,order:[0,1,2],last:null,done:0,ok:0,phase:"tema",lock:null,msg:""};
+  try{V.lock=await navigator.wakeLock.request("screen")}catch(e){}
+  go("voice");speechSynthesis.getVoices();await new Promise(r=>setTimeout(r,250));
+  if(did&&DECKS[did])voiceDeck(did);else voiceAskTema("¿Qué tema quieres estudiar?")}
+function voiceStop(){if(!V)return;stopBarge();V.on=false;try{V.rec&&V.rec.abort()}catch(e){}speechSynthesis.cancel();try{V.lock&&V.lock.release()}catch(e){}V=null}
+async function hear(prompt,tries){for(let k=0;k<(tries||3);k++){if(!V||!V.on)return null;const alts=await listen();if(!V||!V.on)return null;
+    if(V.denied){V.msg="Chrome no tiene permiso para usar el micrófono. Actívalo en los permisos del sitio y vuelve a intentarlo.";V.on=false;renderVoice();return null}
+    if(alts&&alts.length){setVStatus("think",alts[0]);return alts}
+    if(k<(tries||3)-1&&prompt)await say(prompt)}
+  return null}
+async function voiceAskTema(q){V.phase="tema";V.cur=null;renderVoice();await say(q);
+  const alts=await hear("Dime el número del tema.",3);if(!alts){if(V&&V.on)voicePause();return}
+  const all=alts.join(" "),cmd=parseCmd(all);if(cmd==="exit"||cmd==="pause"){voicePause();return}
+  let n=null;for(const a of alts){n=wordsToNum(a);if(n!=null)break}
+  let d=n!=null?DECKS["t"+n]:null;
+  if(!d){const na=normTxt(all);d=deckList().find(x=>na.includes(normTxt(x.name)))||deckList().find(x=>toks(x.name).filter(w=>w.length>4).some(w=>na.includes(w)))}
+  if(!d)return voiceAskTema(n!=null?"No tengo el tema "+n+". Dime otro número.":"No te he entendido. ¿Qué tema quieres?");
+  voiceDeck(d.id)}
+async function voiceDeck(did){V.did=did;const d=DECKS[did],k=counts(did),sum=k.n+k.l+k.r;
+  if(!sum){const nx=nextStudy(did);return voiceAskTema("El tema "+(d.num??d.name)+" no tiene preguntas pendientes"+(nx!=null?"; te toca "+relDay(nx):"")+". ¿Qué otro tema quieres?")}
+  V.done=0;V.ok=0;V.last=null;await say("Tema "+(d.num!=null?d.num+", ":"")+d.name+". Tienes "+sum+" preguntas. Responde A, B o C, uno, dos o tres, o alfa, bravo o charlie.");voiceNext()}
+async function voiceNext(){if(!V||!V.on)return;const cid=nextCard(V.did,V.last);
+  if(!cid){const d=DECKS[V.did];return voiceAskTema("Has terminado el tema "+(d.num??d.name)+". "+V.ok+" aciertos de "+V.done+". ¿Quieres otro tema? Di el número o di salir.")}
+  const c=CARDS[cid];if(c.kind!=="test"){V.last=cid;return voiceBasic(cid)}
+  V.cur=cid;V.phase="q";V.order=shuffle3();V.chosen=null;V.heard="";V.t0=null;V.tq=now();renderVoice();voiceAsk()}
+async function voiceRead(){const c=CARDS[V.cur],g=V.gen;V.readText=normTxt(c.q+" "+c.opts.join(" "));await say(c.q);for(let p=0;p<3;p++){if(!V||!V.on||V.gen!==g)return;V.label=p;V.labelAt=now();await say("ABC"[p]+". "+c.opts[V.order[p]])}if(V&&V.gen===g)V.t0=now()}
+async function voiceAnswer(){let miss=0;const g=V.gen;
+  while(V&&V.on&&V.gen===g){const alts=await hear(null,1);if(!V||!V.on||V.gen!==g)return;
+    if(!alts){if(++miss>=3){voicePause();return}await say(miss===1?"¿A, B o C?":"No te oigo. Di A, B o C, o di repite.");continue}
+    const mk=parseMark(alts[0]);if(mk){applyVoiceMark(mk);await say(mk.prev?"Marcada la anterior.":"Marcada como "+MTAGN[mk.tag].replace("⭐ ","")+".");continue}
+    const all=alts.join(" | "),cmd=parseCmd(alts[0]);
+    if(cmd==="pause"){voicePause();return}if(cmd==="exit"){voiceExit();return}if(cmd==="change"){V.last=V.cur;return voiceAskTema("¿Qué tema quieres?")}
+    if(cmd==="repeat"){await voiceRead();continue}if(cmd==="explain")continue;if(cmd==="skip"){V.last=V.cur;await say("Saltada.");return voiceNext()}
+    let pos=null;for(const a of alts){pos=parseOption(a);if(pos!=null)break}
+    if(pos==null){await say("No te he entendido. Di A, B o C.");continue}
+    return voiceGrade(pos)}}
+async function voiceGrade(pos){stopBarge();V.reading=false;const c=CARDS[V.cur],oi=V.order[pos],ok=oi===c.a,ms=now()-(V.t0||V.tq||now());
+  const g=ok?preGrade(ms):1;V.chosen=oi;V.phase="a";V.lastDone=V.cur;const r=commit(V.cur,g,ms,oi);V.done++;if(ok)V.ok++;V.last=V.cur;renderVoice();
+  const right="ABC"[V.order.indexOf(c.a)];
+  await say(ok?"Correcto.":"Incorrecto. La correcta es la "+right+": "+c.opts[c.a]+".");
+  if(c.exp)await say(c.exp);
+  const rf=REF[c.did]?.items?.[c.id];if(rf)await say("Refuerzo: "+rf.text);
+  await new Promise(r=>setTimeout(r,500));voiceNext()}
+async function voiceBasic(cid){V.cur=cid;V.phase="q";renderVoice();const c=CARDS[cid];await say(c.q+". Di la respuesta en voz alta y luego di ya.");
+  await hear(null,2);V.phase="a";renderVoice();await say("La respuesta es: "+c.ans+". ¿La sabías? Di sí o no.");
+  const alts=await hear("¿Sí o no?",2);const yes=alts&&/\b(si|sí|sabia|bien|correcto)\b/.test(normTxt(alts.join(" ")));
+  commit(cid,yes?3:1,8000,null);V.done++;if(yes)V.ok++;voiceNext()}
+function voicePause(){if(!V)return;stopBarge();V.on=false;V.gen++;try{V.rec&&V.rec.abort()}catch(e){}speechSynthesis.cancel();V.status="paused";renderVoice()}
+function voiceResume(){if(!V)return;V.on=true;V.gen++;V.msg="";if(V.phase==="q"&&V.cur){renderVoice();voiceAsk()}else if(V.did&&V.phase!=="tema")voiceNext();else voiceAskTema("¿Qué tema quieres estudiar?")}
+function voiceExit(){const d=V&&V.did;voiceStop();go(d?"overview":"decks",d?{deck:d}:undefined)}
+function renderVoice(){const box=$("#vVoice");if(!box||view!=="voice"||!V)return;const c=V.cur?CARDS[V.cur]:null,d=V.did?DECKS[V.did]:null;
+  const ST={speak:"Hablando…",listen:"Escuchando…",think:"Entendido",idle:"",paused:"En pausa"};
+  let h='<div class="rv pad"><div class="rv-tiles"><div class="rv-tile"><span class="n">'+V.done+'</span><span class="l">respondidas</span></div><div class="rv-tile"><span class="n ok">'+V.ok+'</span><span class="l">aciertos</span></div><div class="rv-tile"><span class="n bad">'+(V.done-V.ok)+'</span><span class="l">fallos</span></div></div>';
+  h+='<div class="vstat '+V.status+'"><span class="vdot"></span><span>'+(V.msg?esc(V.msg):ST[V.status]||"")+'</span>'+(V.heard?'<span class="vheard">«'+esc(V.heard)+'»</span>':'')+'</div>';
+  if(c&&c.kind==="test"){h+='<div class="rv-card"><div class="rv-top"><span class="rv-num">'+(d.num!=null?"Tema "+d.num:esc(d.name))+'</span></div><div class="qtext">'+nl(c.q)+'</div><div class="options'+(V.phase==="a"?" answered":" no-hover")+'">'+
+      V.order.map((oi,p)=>{let cl="option";if(V.phase==="a")cl+=oi===c.a?" correct":oi===V.chosen?" incorrect":" dim";return '<button class="'+cl+'" data-vo="'+p+'"><span class="letter">'+"abc"[p]+'</span><span class="label">'+nl(c.opts[oi])+'</span></button>'}).join("")+'</div>'+
+      (V.phase==="a"&&c.exp?'<div class="explain"><span class="explain-title">Por qué</span>'+nl(c.exp)+'</div>':'')+'</div>'}
+  else if(c){h+='<div class="rv-card"><div class="qtext">'+nl(c.q)+'</div>'+(V.phase==="a"?'<div class="answerbox">'+nl(c.ans)+'</div>':'')+'</div>'}
+  else h+='<div class="rv-card"><div class="rv-done"><div class="rv-big">🎙</div><p>Di el número del tema que quieres estudiar, por ejemplo «tema diecisiete».</p></div></div>';
+  if(c)h+=marksRow(c.id);
+  h+='<div class="vhelp">Responde: <b>A · B · C</b>, <b>1 · 2 · 3</b> o <b>Alfa · Bravo · Charlie</b>'+(SYNC.bargeIn===false?'':', también mientras lee')+'. Comandos: «repite», «salta», «cambia de tema», «pausa». Marcas: «estrella», «marca difícil», «marca fácil», «marca errónea», «marca la anterior».</div>';
+  h+='<div class="rv-actions"><button class="ghost" id="vExit">Salir</button>'+(V.on?'<button class="next-btn" id="vPause">Pausa</button>':'<button class="next-btn" id="vGo">'+(V.status==="paused"?"Continuar":"Empezar")+'</button>')+'</div></div>';
+  box.innerHTML=h;
+  $("#vExit").onclick=voiceExit;if($("#vPause"))$("#vPause").onclick=voicePause;if($("#vGo"))$("#vGo").onclick=voiceResume;
+  box.querySelectorAll("[data-vo]").forEach(b=>b.onclick=()=>{if(V.phase==="q"&&V.on){V.gen++;try{V.rec&&V.rec.abort()}catch(e){}speechSynthesis.cancel();voiceGrade(+b.dataset.vo)}})}
+document.addEventListener("visibilitychange",()=>{if(document.hidden&&V&&V.on)voicePause()});
+
+
+/* responder mientras lee la pregunta + marcas por voz */
+function parseMark(s){const n=normTxt(s);if(!/\b(estrella|marca|marcala|marcar|marcame)\b/.test(n))return null;
+  const prev=/\banterior\b/.test(n);let tag="star";if(/\bfacil\b/.test(n))tag="facil";else if(/\bdificil\b/.test(n))tag="dificil";else if(/\b(erronea|errone|error|mal|incorrecta|equivocada)\b/.test(n))tag="erronea";
+  return{tag,prev}}
+function applyVoiceMark(mk){const cid=mk.prev?(V.lastDone||null):V.cur;if(!cid)return false;toggleMark(cid,mk.tag,true);toast("Marcada: "+MTAGN[mk.tag]);renderVoice();return true}
+function voiceAsk(){if(SYNC.bargeIn===false){(async()=>{const g=++V.gen;await voiceRead();if(V&&V.gen===g)voiceAnswer()})();return}voiceAskBarge()}
+async function voiceAskBarge(){const g=++V.gen;V.reading=true;V.miss=0;startBarge(g);await voiceRead();if(!V||!V.on||V.gen!==g)return;V.reading=false;setVStatus("listen");armSilence(g)}
+function armSilence(g){clearTimeout(V.silT);V.silT=setTimeout(async()=>{if(!V||!V.on||V.gen!==g||V.phase!=="q")return;
+  if(++V.miss>=3){voicePause();return}V.reading=true;await say(V.miss===1?"¿A, B o C?":"No te oigo. Di A, B o C, o di repite.");if(!V||V.gen!==g)return;V.reading=false;setVStatus("listen");armSilence(g)},9000)}
+function startBarge(g){stopBarge();const r=new SR();V.brec=r;r.lang="es-ES";r.continuous=true;r.interimResults=false;r.maxAlternatives=4;
+  r.onresult=e=>{if(!V||V.gen!==g)return;for(let i=e.resultIndex;i<e.results.length;i++){const res=e.results[i];if(!res.isFinal)continue;const alts=[...res].map(a=>a.transcript.trim()).filter(Boolean);if(alts.length)handleBarge(alts,g)}};
+  r.onerror=e=>{if(e.error==="not-allowed"||e.error==="service-not-allowed"){V.msg="Chrome no tiene permiso para usar el micrófono. Actívalo en los permisos del sitio.";voicePause()}};
+  r.onend=()=>{if(V&&V.on&&V.gen===g&&V.phase==="q"&&V.brec===r){setTimeout(()=>{if(V&&V.on&&V.gen===g&&V.brec===r){try{r.start()}catch(err){}}},150)}};
+  try{r.start()}catch(e){}}
+function stopBarge(){if(!V)return;clearTimeout(V.silT);if(V.brec){const r=V.brec;V.brec=null;try{r.abort()}catch(e){}}}
+function looksEcho(t){if(!V.reading)return false;const w=normTxt(t).replace(/[^a-z0-9ñ ]/g," ").split(/\s+/).filter(Boolean);if(w.length>3)return true;
+  const rt=new Set((V.readText||"").replace(/[^a-z0-9ñ ]/g," ").split(/\s+/));if(w.length>1&&w.every(x=>rt.has(x)))return true;
+  const p=parseOption(t);if(p!=null&&V.label!=null&&w.length===1&&["a","b","c","be","ce","se"].includes(w[0])&&now()-(V.labelAt||0)<2500&&p===V.label)return true;
+  return false}
+async function handleBarge(alts,g){const t=alts[0];V.heard=t;
+  const mk=parseMark(t);if(mk&&!(V.reading&&normTxt(t).split(/\s+/).length>4)){applyVoiceMark(mk);if(!V.reading){V.reading=true;await say("Marcada.");if(V&&V.gen===g){V.reading=false;armSilence(g)}}return}
+  const cmd=parseCmd(t);
+  if(cmd&&!(V.reading&&looksEcho(t))&&cmd!=="explain"){V.gen++;stopBarge();speechSynthesis.cancel();V.reading=false;
+    if(cmd==="pause")return voicePause();if(cmd==="exit")return voiceExit();if(cmd==="change"){V.last=V.cur;return voiceAskTema("¿Qué tema quieres?")}
+    if(cmd==="repeat")return voiceAskBarge();if(cmd==="skip"){V.last=V.cur;await say("Saltada.");return voiceNext()}return}
+  if(looksEcho(t)){renderVoice();return}
+  let pos=null;for(const a of alts){pos=parseOption(a);if(pos!=null)break}
+  if(pos!=null){V.gen++;speechSynthesis.cancel();return voiceGrade(pos)}
+  if(!V.reading){clearTimeout(V.silT);V.reading=true;await say("No te he entendido. Di A, B o C.");if(V&&V.gen===g){V.reading=false;setVStatus("listen");armSilence(g)}}
+  else renderVoice()}
+/* ---------- marcas: ⭐ repasar, fácil, difícil, errónea ---------- */
+const MTAGS=[["star","⭐ Repasar"],["facil","Fácil"],["dificil","Difícil"],["erronea","Errónea"]];
+const MTAGN=Object.fromEntries(MTAGS);
+const markOf=cid=>MARKS[cid]&&MARKS[cid].t?MARKS[cid]:null;
+const hasMark=(cid,t)=>!!(MARKS[cid]&&MARKS[cid].t&&MARKS[cid].t[t]);
+function markedIds(tag,did){return Object.keys(MARKS).filter(id=>CARDS[id]&&MARKS[id].t&&Object.keys(MARKS[id].t).length&&(!tag||tag==="all"||MARKS[id].t[tag])&&(!did||did==="all"||CARDS[id].did===did))}
+function toggleMark(cid,tag,force){if(!CARDS[cid])return false;const m=MARKS[cid]||(MARKS[cid]={t:{},n:""});m.t=m.t||{};
+  const on=force===true?true:force===false?false:!m.t[tag];if(on)m.t[tag]=1;else delete m.t[tag];m.ts=now();
+  if(!Object.keys(m.t).length&&!m.n)delete MARKS[cid];saveMarks();return on}
+function marksRow(cid){if(!CARDS[cid])return"";const m=MARKS[cid];
+  return '<div class="mrow" data-mrow="'+cid+'">'+MTAGS.map(([k,l])=>'<button class="mchip m-'+k+(hasMark(cid,k)?" on":"")+'" data-mark="'+k+'" data-mcid="'+cid+'" aria-pressed="'+hasMark(cid,k)+'">'+l+'</button>').join("")+
+    (m&&m.n?'<span class="mnote2">«'+esc(m.n)+'»</span>':'')+'</div>'}
+function markNoteForm(cid){const m=MARKS[cid]||{n:""};const s=sheet('<h4>¿Qué está mal en esta pregunta?</h4><p class="note">'+esc(CARDS[cid].q)+'</p><div class="field" style="margin-top:10px"><label for="mkN">Nota (opcional)</label><textarea id="mkN" placeholder="Por ejemplo: la respuesta correcta es la B según el art. 56.2">'+esc(m.n||"")+'</textarea></div><div class="rowbtns" style="margin-top:10px"><button class="tbtn" data-x>Omitir</button><button class="fbtn" data-ok>Guardar</button></div>');
+  s.querySelector("[data-x]").onclick=closeSheet;s.querySelector("[data-ok]").onclick=()=>{const v=$("#mkN").value.trim();if(MARKS[cid]){MARKS[cid].n=v;MARKS[cid].ts=now();saveMarks()}closeSheet();refreshMarkRows(cid)}}
+function refreshMarkRows(cid){document.querySelectorAll('[data-mrow="'+cid+'"]').forEach(el=>{el.outerHTML=marksRow(cid)});if(view==="marks")renderMarks();if(view==="decks")renderDecks()}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-mark]");if(!b)return;e.stopPropagation();e.preventDefault();
+  const cid=b.dataset.mcid,tag=b.dataset.mark,on=toggleMark(cid,tag);refreshMarkRows(cid);
+  if(on&&tag==="erronea")markNoteForm(cid);else toast(on?"Marcada: "+MTAGN[tag]:"Marca quitada")},true);
+/* sesión de estudio con las marcadas */
+let MK={tag:"all",did:"all"};
+function nextMarked(avoid){const seen=new Set(sess.hist.map(h=>h.cid));const ids=markedIds(MK.tag,MK.did).filter(id=>!seen.has(id));
+  return ids.sort((a,b)=>(MARKS[a].ts||0)-(MARKS[b].ts||0))[0]||null}
+function marksCounts(){const seen=new Set(sess.hist.map(h=>h.cid));const n=markedIds(MK.tag,MK.did).filter(id=>!seen.has(id)).length;return{n:0,l:0,r:n,total:n,newLeft:0}}
+function renderMarks(){const all=markedIds("all","all"),ids=markedIds(MK.tag,MK.did),box=$("#vMarks");
+  const decksWith=[...new Set(all.map(id=>CARDS[id].did))].map(id=>DECKS[id]).filter(Boolean).sort((a,b)=>(a.num??999)-(b.num??999));
+  const cnt=t=>markedIds(t,MK.did).length;
+  let h='<div class="pad" style="padding-block:12px;display:flex;flex-direction:column;gap:10px"><div class="stbar" style="padding:0">'+
+    [["all","Todas"]].concat(MTAGS).map(([k,l])=>'<button class="seg'+(MK.tag===k?" on":"")+'" data-mf="'+k+'">'+l+' · '+cnt(k)+'</button>').join("")+'</div>'+
+    '<div class="field"><label for="mkD">Tema</label><select id="mkD"><option value="all">Todos los temas</option>'+decksWith.map(d=>'<option value="'+d.id+'"'+(MK.did===d.id?" selected":"")+'>'+(d.num!=null?"T"+d.num+" · ":"")+esc(d.name)+'</option>').join("")+'</select></div>'+
+    '<div class="rowbtns" style="justify-content:flex-start"><button class="fbtn" id="mkStudy"'+(ids.length?"":" disabled")+'>Estudiar estas '+ids.length+'</button></div></div>';
+  if(!all.length)h+='<div class="empty">Todavía no has marcado ninguna pregunta.<br>Mientras estudias, usa los botones ⭐ Repasar, Fácil, Difícil o Errónea que hay debajo de cada pregunta. Por voz: «estrella», «marca difícil», «marca errónea» o «marca la anterior».</div>';
+  else h+='<div class="decklist">'+ids.sort((a,b)=>(MARKS[b].ts||0)-(MARKS[a].ts||0)).map(id=>{const c=CARDS[id],d=DECKS[c.did],m=MARKS[id];
+      return '<div class="mitem pad"><button class="mq" data-mopen="'+id+'"><small>'+(d.num!=null?"Tema "+d.num:esc(d.name))+' · '+Object.keys(m.t).map(t=>MTAGN[t]).join(" · ")+'</small><span>'+esc(c.q)+'</span>'+
+        '<span class="ma">'+nl(c.kind==="test"?c.opts[c.a]:c.ans)+(c.exp?'<em>'+nl(c.exp)+'</em>':'')+(m.n?'<b>Tu nota: '+esc(m.n)+'</b>':'')+'</span></button>'+marksRow(id)+'</div>'}).join("")+'</div>';
+  box.innerHTML=h;
+  box.querySelectorAll("[data-mf]").forEach(b=>b.onclick=()=>{MK.tag=b.dataset.mf;renderMarks()});
+  $("#mkD").onchange=e=>{MK.did=e.target.value;renderMarks()};
+  box.querySelectorAll("[data-mopen]").forEach(b=>b.onclick=()=>b.parentElement.classList.toggle("open"));
+  $("#mkStudy").onclick=()=>go("review",{deck:"_marks"})}
 /* ---------- estadísticas ---------- */
 const COL={n:"var(--new)",l:"var(--learn)",r:"var(--rev)",y:"var(--young)",m:"var(--mature)"};
 function fillDeckSelect(){$("#statDeck").innerHTML='<option value="all">Todos los temas</option>'+deckList().map(d=>'<option value="'+d.id+'">'+(d.num!=null?"T"+d.num+" · ":"")+esc(d.name)+'</option>').join("");
@@ -935,9 +1144,12 @@ function renderSettings(){
    '<p class="note">El progreso se guarda en este dispositivo automáticamente. Para tenerlo también en otro móvil u ordenador, pega la URL de tu Realtime Database de Firebase.</p>'+
    '<div class="field"><label for="fbUrl">URL de Firebase Realtime Database (opcional)</label><input id="fbUrl" type="url" placeholder="https://tu-proyecto-default-rtdb.europe-west1.firebasedatabase.app" value="'+esc(SYNC.url)+'"></div>'+
    '<div class="rowbtns"><button class="tbtn" id="fbTest">Probar y sincronizar</button><button class="fbtn" id="fbSave">Guardar</button></div>'+
-   '<p class="note" id="fbMsg"></p>'+
+   '<p class="note" id="fbMsg">'+(lastSyncErr?"Último error de sincronización: "+esc(lastSyncErr):"")+'</p>'+
    '<div class="rowbtns"><button class="tbtn" id="exp">Exportar copia</button><button class="tbtn" id="imp">Importar copia</button></div>'+
    '<input type="file" id="impFile" accept=".json,application/json" hidden>'+
+   '<div class="sec-t">Estudiar por voz</div>'+
+   '<label class="switchrow"><span>Responder mientras lee<small>Puedes contestar sin esperar a que termine. Mejor con auriculares, para que no se escuche a sí misma.</small></span><input type="checkbox" id="vBarge"'+(SYNC.bargeIn===false?"":" checked")+'></label>'+
+   '<div class="field"><label for="vRate">Velocidad de la voz</label><select id="vRate">'+[[0.9,"Lenta"],[1.05,"Normal"],[1.2,"Rápida"],[1.35,"Muy rápida"]].map(([v,l])=>'<option value="'+v+'"'+((SYNC.voiceRate||1.05)==v?" selected":"")+'>'+l+'</option>').join("")+'</select></div>'+
    '<div class="sec-t">Avisos</div>'+
    '<p class="note">Te llega una notificación con las preguntas pendientes de cada tema, aunque la app esté cerrada. Necesita la sincronización con Firebase activada.</p>'+
    '<div class="field"><label for="pushHours">Horas de aviso (separadas por comas)</label><input id="pushHours" inputmode="numeric" value="'+esc((SYNC.hours||[]).join(", "))+'"></div>'+
@@ -951,14 +1163,16 @@ function renderSettings(){
    '<div class="sec-t">Datos</div>'+
    '<p class="note">Banco incluido: '+BANK.length+' preguntas tipo test de '+deckList().filter(d=>!d.custom).length+' temas.</p>'+
    '<div class="rowbtns"><button class="tbtn danger" id="wipe">Reiniciar todo el progreso</button></div>';
+  $("#vBarge").onchange=e=>{SYNC.bargeIn=e.target.checked;saveSyncCfg();toast(e.target.checked?"Podrás responder mientras lee":"Responderás cuando termine de leer")};
+  $("#vRate").onchange=e=>{SYNC.voiceRate=+e.target.value;saveSyncCfg();toast("Velocidad guardada")};
   $("#saveDef").onclick=()=>{CFG.newPerDay=Math.max(0,parseInt($("#defNew").value)||0);saveCfg();toast("Guardado")};
   $("#applyAll").onclick=()=>{CFG.newPerDay=Math.max(0,parseInt($("#defNew").value)||0);Object.keys(DECKS).forEach(id=>{dcfg(id).newPerDay=CFG.newPerDay});saveCfg();toast("Aplicado a todos los temas")};
-  const saveUrl=()=>{const u=$("#fbUrl").value.trim();if(u&&!/^https:\/\/[^/]+\.(firebaseio\.com|firebasedatabase\.app)\/?$/.test(u)){$("#fbMsg").textContent="La URL debe ser la de la base de datos, del estilo https://algo.firebasedatabase.app (no la de la consola).";return false}SYNC.url=u;saveSyncCfg();return true};
+  const saveUrl=()=>{const u=$("#fbUrl").value.trim();if(u&&!/^https:\/\/[^/]+\.(firebaseio\.com|firebasedatabase\.app)\/?$/.test(u)){$("#fbMsg").textContent="La URL debe ser la de la base de datos, del estilo https://algo.firebasedatabase.app (no la de la consola).";return false}SYNC.url=u;SYNC.syncOff=!u;saveSyncCfg();return true};
   $("#fbSave").onclick=()=>{if(saveUrl()){$("#fbMsg").textContent=SYNC.url?"Guardado. Se sincroniza al abrir la app y al salir de ella.":"Sincronización desactivada.";if(SYNC.url)pullRemote()}};
   $("#fbTest").onclick=async()=>{if(!saveUrl()||!SYNC.url)return;$("#fbMsg").textContent="Probando…";
-    try{const r=await fetch(fbBase()+"/_ping.json",{method:"PUT",body:JSON.stringify(now())});if(!r.ok)throw new Error(r.status);
+    try{const r=await fetch(fbBase()+"/_ping.json",{method:"PUT",body:JSON.stringify(now())});if(!r.ok)throw new Error(await fbErr(r));
       allPaths().forEach(p=>{if(!DOCTS[p])DOCTS[p]=1});await pullRemote();await pushRemote();$("#fbMsg").textContent="Conectado: progreso sincronizado con Firebase."}
-    catch(e){$("#fbMsg").textContent="No se pudo conectar ("+e.message+"). Revisa la URL y que las reglas de la base de datos permitan leer y escribir."}};
+    catch(e){$("#fbMsg").textContent="No se pudo conectar ("+e.message+"). "+(/permission|401|403/i.test(e.message)?"Las reglas de tu Firebase no permiten escribir en mazosOposicion: revisa Realtime Database → Reglas.":"Revisa la URL y la conexión.")}};
   $("#exp").onclick=()=>downloadFile("mazos-oposicion-"+dayStr(dayNum(now()))+".json",JSON.stringify(snapshot()));
   $("#imp").onclick=()=>{$("#impFile").value="";$("#impFile").click()};
   $("#impFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{let d;try{d=JSON.parse(rd.result)}catch(err){toast("El archivo no es una copia válida");return}
